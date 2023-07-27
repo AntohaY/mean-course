@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { Post } from 'src/app/shared/interfaces/post';
 
 @Component({
     selector: 'app-post-list',
@@ -11,11 +12,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 })
 
 export class PostListComponent implements OnInit {
-    posts = [
-        {title: 'First Post', content: 'Content first post'},
-        {title: 'Second Post', content: 'Content second post'},
-        {title: 'Third Post', content: 'Content third post'}
-    ];
+
+    @Input() posts: Post[] = [];
     constructor() { }
 
     ngOnInit() { }

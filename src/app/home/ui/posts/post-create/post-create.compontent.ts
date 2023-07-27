@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { Post } from 'src/app/shared/interfaces/post';
 
 @Component({
     selector: 'app-post-create',
@@ -14,14 +15,18 @@ import { MatButtonModule } from '@angular/material/button';
 })
 
 export class PostCreateComponent implements OnInit {
-    enteredValue = '';
-    newPost = '';
-
+    enteredTitle = '';
+    enteredContent = ''
+    @Output() postCreated = new EventEmitter<Post>();
     constructor() { }
 
     ngOnInit() { }
 
     onAddPost() {
-        this.newPost = this.enteredValue;
+        const post = {
+            title: this.enteredTitle,
+            content: this.enteredContent
+        }
+        this.postCreated.emit(post);
     }
 }
