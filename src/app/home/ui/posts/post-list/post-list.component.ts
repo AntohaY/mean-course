@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { Post } from 'src/app/shared/interfaces/post';
-
+import { PostsService } from 'src/app/home/data-access/posts.service';
 @Component({
     selector: 'app-post-list',
     templateUrl: 'post-list.component.html',
@@ -13,8 +12,9 @@ import { Post } from 'src/app/shared/interfaces/post';
 
 export class PostListComponent implements OnInit {
 
-    @Input() posts: Post[] = [];
-    constructor() { }
+    constructor(private postsService: PostsService) { }
 
-    ngOnInit() { }
+    posts$ = this.postsService.getPostUpdateListener();
+
+    ngOnInit() {}
 }

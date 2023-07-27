@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { PostCreateComponent } from './ui/posts/post-create/post-create.compontent';
 import { HeaderComponent } from './ui/header/header.component';
 import { PostListComponent } from './ui/posts/post-list/post-list.component';
-import { Post } from '../shared/interfaces/post';
 
 @Component({
   selector: 'app-home',
@@ -13,21 +12,13 @@ import { Post } from '../shared/interfaces/post';
     `
       main {
         width: 80%;
-        margin: auto;
-        margin-top: 1rem;
+        margin-top: 1rem auto;
       }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent {
-  storedPosts: Post[] = [];
-
-  constructor() {}
-  
-  onPostAdded(post: Post) {
-    this.storedPosts.push(post);
-  }
 }
 @NgModule({
   imports: [
