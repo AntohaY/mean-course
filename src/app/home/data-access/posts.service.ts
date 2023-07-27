@@ -4,11 +4,10 @@ import { BehaviorSubject } from 'rxjs';
 
 @Injectable({providedIn: 'root'})
 export class PostsService {
-    private posts: Post[] = [];
     private postsUpdated$ = new BehaviorSubject<Post[]>([]);
 
     getPosts() {
-        return [...this.posts];
+        return [...this.postsUpdated$.value];
     }
 
     getPostUpdateListener() {
@@ -17,8 +16,6 @@ export class PostsService {
     
     addPost(title: string, content: string) {
         const post: Post = { title, content };
-        this.posts.push(post);
-
-        this.postsUpdated$.next([...this.posts]);
+        this.postsUpdated$.next([...this.postsUpdated$.value, post]);
     }
 }
