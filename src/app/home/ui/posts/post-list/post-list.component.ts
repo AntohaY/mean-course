@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 
@@ -6,7 +7,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
     templateUrl: 'post-list.component.html',
     styleUrls: ['post-list.component.scss'],
     standalone: true,
-    imports: [MatExpansionModule]
+    imports: [MatExpansionModule, CommonModule]
 })
 
 export class PostListComponent implements OnInit {
