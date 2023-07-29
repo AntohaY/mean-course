@@ -1,16 +1,23 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { PreloadAllModules, RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientModule } from '@angular/common/http';
+import { PostsService } from './shared/data-access/posts.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'mean-course';
+export class AppComponent implements OnInit {
+  constructor(
+    private postsService: PostsService
+  ) {}
+  ngOnInit() {
+    this.postsService.fetchPostsFromServer();
+  }
 }
 
 @NgModule({
@@ -35,6 +42,7 @@ export class AppComponent {
       { preloadingStrategy: PreloadAllModules }
     ),
     BrowserAnimationsModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

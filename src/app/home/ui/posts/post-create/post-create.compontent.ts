@@ -5,7 +5,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { NgIf } from '@angular/common';
-import { PostsService } from 'src/app/home/data-access/posts.service';
+import { PostsService } from 'src/app/shared/data-access/posts.service';
 
 @Component({
     selector: 'app-post-create',
