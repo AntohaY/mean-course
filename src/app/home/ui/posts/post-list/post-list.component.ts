@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { PostsService } from 'src/app/shared/data-access/posts.service';
 import { MatButtonModule } from '@angular/material/button';
+import { Post } from 'src/app/shared/interfaces/post';
 @Component({
     selector: 'app-post-list',
     templateUrl: 'post-list.component.html',
@@ -18,4 +19,8 @@ export class PostListComponent implements OnInit {
     posts$ = this.postsService.getPosts();
 
     ngOnInit() {}
+
+    onDelete(postId: string) {
+        this.postsService.deletePost(postId);
+    }
 }

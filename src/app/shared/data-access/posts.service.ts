@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Post } from 'src/app/shared/interfaces/post';
-import { BehaviorSubject, EMPTY, Observable, catchError, shareReplay, tap } from 'rxjs';
+import { BehaviorSubject, EMPTY, Observable, catchError, map, shareReplay, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({providedIn: 'root'})
@@ -10,19 +10,39 @@ export class PostsService {
 
     fetchPostsFromServer() {
         this.http.get<{message: string, posts: Post[]}>('http://localhost:3000/api/posts')
-            .subscribe((postData) => this.posts$.next([...this.posts$.value, ...postData.posts]));
+            .pipe(map((postData) => {
+                return postData.posts.map(post => {
+                    return {
+                        title: post.title,
+                        content: post.content,
+                        _id: post._id
+                    }
+                })
+            }))
+            .subscribe((postData) => this.posts$.next([...this.posts$.value, ...postData]));
     }
     
     addPost(title: string, content: string) {
         const newPost: Post = { 
-            id: Date.now().toString(),
+            _id: Date.now().toString(),
             title, 
             content
-        };
-        this.posts$.next([...this.posts$.value, newPost]);
-        this.http.post<{message: string}>('http://localhost:3000/api/posts', newPost)
+        };    
+        this.http.post<{message: string, postId: string}>('http://localhost:3000/api/posts', newPost)
             .subscribe((responseData) => {
-                console.log(responseData)
+                const postId = responseData.postId;
+                newPost._id = postId;
+                this.posts$.next([...this.posts$.value, newPost]);
+            })
+    }
+
+    deletePost(postId: string) {
+        this.http.delete('http://localhost:3000/api/posts/' + postId)
+            .subscribe(() => {
+                const modifiedPosts = this.posts$.value.filter(
+                    (post) => post._id !== postId
+                );
+                this.posts$.next(modifiedPosts);
             })
     }
 
