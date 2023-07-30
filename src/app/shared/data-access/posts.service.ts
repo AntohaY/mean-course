@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { Post } from 'src/app/shared/interfaces/post';
 import { BehaviorSubject, EMPTY, Observable, catchError, map, shareReplay, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Injectable({providedIn: 'root'})
 export class PostsService {
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient, private router: Router) {}
     private posts$ = new BehaviorSubject<Post[]>([]);
 
     fetchPostsFromServer() {
@@ -33,6 +34,7 @@ export class PostsService {
                 const postId = responseData.postId;
                 newPost._id = postId;
                 this.posts$.next([...this.posts$.value, newPost]);
+                this.router.navigate(['/']);
             })
     }
 
@@ -55,10 +57,13 @@ export class PostsService {
         this.http
             .put('http://localhost:3000/api/posts/' + _id, updatedPost)
             .subscribe(response => {
-                const updatedPosts = [...this.posts$.value];
-                const oldPostIndex = updatedPosts.findIndex(p => p._id === updatedPost._id);
-                updatedPosts[oldPostIndex] = updatedPost;
-                this.posts$.next(updatedPosts)
+                const modifiedPosts = this.posts$.value.map((post) =>
+                post._id === _id
+                    ? { ...post, title: title, content: content }
+                    : post
+                );
+                this.posts$.next(modifiedPosts)
+                this.router.navigate(['/']);
             })
     }
 
