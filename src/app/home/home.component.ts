@@ -27,6 +27,16 @@ export class HomeComponent {
       {
         path: '',
         component: HomeComponent,
+        children: [
+          {
+            path: '',
+            component: PostListComponent
+          },
+          {
+            path: 'create',
+            component: PostCreateComponent,
+          },
+        ]
       },
     ]),
     PostCreateComponent,
