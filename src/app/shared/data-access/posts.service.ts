@@ -13,9 +13,9 @@ export class PostsService {
             .pipe(map((postData) => {
                 return postData.posts.map(post => {
                     return {
+                        _id: post._id,
                         title: post.title,
                         content: post.content,
-                        _id: post._id
                     }
                 })
             }))
@@ -46,11 +46,28 @@ export class PostsService {
             })
     }
 
+    updatePost(_id: string, title: string, content: string) {
+        const updatedPost: Post = {
+            _id,
+            title,
+            content
+        }
+        this.http
+            .put('http://localhost:3000/api/posts/' + _id, updatedPost)
+            .subscribe(response => {
+                const updatedPosts = [...this.posts$.value];
+                const oldPostIndex = updatedPosts.findIndex(p => p._id === updatedPost._id);
+                updatedPosts[oldPostIndex] = updatedPost;
+                this.posts$.next(updatedPosts)
+            })
+    }
+
+    getPost(id: string) {
+        return {...this.posts$.value.find(p => p._id === id)};
+        // return this.http.get<Post>('http://localhost:3000/api/posts/' + id);
+    }
+
     private sharedPosts$: Observable<Post[]> = this.posts$.pipe(
-        // Trigger a save whenever this stream emits new data
-        tap((posts) => {
-            console.log(posts)
-        }),
         // Share this stream with multiple subscribers, instead of creating a new one for each
         shareReplay(1)
     );

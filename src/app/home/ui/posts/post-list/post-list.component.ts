@@ -4,12 +4,13 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { PostsService } from 'src/app/shared/data-access/posts.service';
 import { MatButtonModule } from '@angular/material/button';
 import { Post } from 'src/app/shared/interfaces/post';
+import { RouterModule } from '@angular/router';
 @Component({
     selector: 'app-post-list',
     templateUrl: 'post-list.component.html',
     styleUrls: ['post-list.component.scss'],
     standalone: true,
-    imports: [MatExpansionModule, CommonModule, MatButtonModule]
+    imports: [MatExpansionModule, CommonModule, MatButtonModule, RouterModule]
 })
 
 export class PostListComponent implements OnInit {
