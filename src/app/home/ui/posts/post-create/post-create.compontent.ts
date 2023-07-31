@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms';
+import { ReactiveFormsModule, NgForm, FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
@@ -15,7 +15,7 @@ import { Post } from 'src/app/shared/interfaces/post';
     templateUrl: 'post-create.component.html',
     styleUrls: ['post-create.component.scss'],
     standalone: true,
-    imports: [NgIf, FormsModule, MatButtonModule, MatCardModule, MatInputModule, MatFormFieldModule, MatProgressSpinnerModule, AsyncPipe]
+    imports: [NgIf, ReactiveFormsModule, MatButtonModule, MatCardModule, MatInputModule, MatFormFieldModule, MatProgressSpinnerModule, AsyncPipe]
 })
 
 export class PostCreateComponent implements OnInit {
@@ -23,35 +23,40 @@ export class PostCreateComponent implements OnInit {
     enteredContent = ''
     post$!: Post;
     isLoading: boolean = false;
+    form!: FormGroup;
+
     private mode = 'create';
 
     constructor(private postsService: PostsService, private route: ActivatedRoute) { }
 
     ngOnInit() {
+        this.form = new FormGroup({
+            'title': new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]}),
+            'content': new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]})
+        });
         this.route.paramMap.subscribe((paramMap: ParamMap) => {
             if (paramMap.has('postId')) {
                 this.mode = 'edit';
                 this.isLoading = true;
                 this.post$ = this.postsService.getPost(paramMap.get('postId')!) as Post;
                 this.isLoading = false;
+                this.form.setValue({'title': this.post$.title, 'content': this.post$.content});
             } else {
                 this.mode = 'create';
-                this.post$ = {_id: '', title: '', content: ''};
             }
         });
      }
 
-    onSavePost(form: NgForm) {
-        if (form.invalid) {
+    onSavePost() {
+        if (this.form.invalid) {
             return;
         }
 
         if(this.mode === 'create') {
-            this.postsService.addPost(form.value.title, form.value.content);
-            form.resetForm();
+            this.postsService.addPost(this.form.value.title, this.form.value.content);
         } else {
-            this.postsService.updatePost(this.post$._id, form.value.title, form.value.content)
+            this.postsService.updatePost(this.post$._id, this.form.value.title, this.form.value.content)
         }
-        
+        this.form.reset()
     }
 }
