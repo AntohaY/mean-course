@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const postsRoutes = require('./routes/posts');
-import { mongoDBConnectionString } from './connection';
+const mongoDBConnectionString = require('./connection');
 
 const app = express();
 
