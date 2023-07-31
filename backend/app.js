@@ -1,15 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-
 const postsRoutes = require('./routes/posts');
+import { mongoDBConnectionString } from './connection';
 
 const app = express();
 
 mongoose
-  .connect("mongodb+srv://antonyakovenko:GkhTK6OQElgI9yWT@cluster0.7n74lzd.mongodb.net/node-angular?retryWrites=true")
+  .connect(mongoDBConnectionString)
   .then(() => {
-    console.log('Connected to database')
+    console.log('Connected to database :)')
   })
   .catch(() => {
     console.log('Connection failed :(');
