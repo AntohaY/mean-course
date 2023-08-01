@@ -22,7 +22,7 @@ import { mimeType } from './mime-type.validator';
 export class PostCreateComponent implements OnInit {
 	enteredTitle = '';
 	enteredContent = ''
-	post$!: Post;
+	post!: Post;
 	isLoading: boolean = false;
 	form!: FormGroup;
 	imagePreview!: string | ArrayBuffer | null;
@@ -40,9 +40,10 @@ export class PostCreateComponent implements OnInit {
 			if (paramMap.has('postId')) {
 				this.mode = 'edit';
 				this.isLoading = true;
-				this.post$ = this.postsService.getPost(paramMap.get('postId')!) as Post;
+				this.post = this.postsService.getPost(paramMap.get('postId')!) as Post;
 				this.isLoading = false;
-				this.form.setValue({'title': this.post$.title, 'content': this.post$.content});
+				console.log(this.post)
+				this.form.setValue({'title': this.post.title, 'content': this.post.content, 'image': this.post.imagePath});
 			} else {
 				this.mode = 'create';
 			}
@@ -53,11 +54,10 @@ export class PostCreateComponent implements OnInit {
 		if (this.form.invalid) {
 			return;
 		}
-
 		if(this.mode === 'create') {
-			this.postsService.addPost(this.form.value.title, this.form.value.content);
+			this.postsService.addPost(this.form.value.title, this.form.value.content, this.form.value.image);
 		} else {
-			this.postsService.updatePost(this.post$._id, this.form.value.title, this.form.value.content)
+			this.postsService.updatePost(this.post._id, this.form.value.title, this.form.value.content, this.form.value.image)
 		}
 		this.form.reset()
 	}
