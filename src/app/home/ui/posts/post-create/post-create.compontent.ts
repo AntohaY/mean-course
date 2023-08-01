@@ -19,44 +19,62 @@ import { Post } from 'src/app/shared/interfaces/post';
 })
 
 export class PostCreateComponent implements OnInit {
-    enteredTitle = '';
-    enteredContent = ''
-    post$!: Post;
-    isLoading: boolean = false;
-    form!: FormGroup;
+	enteredTitle = '';
+	enteredContent = ''
+	post$!: Post;
+	isLoading: boolean = false;
+	form!: FormGroup;
+	imagePreview!: string | ArrayBuffer | null;
+	private mode = 'create';
 
-    private mode = 'create';
+	constructor(private postsService: PostsService, private route: ActivatedRoute) { }
 
-    constructor(private postsService: PostsService, private route: ActivatedRoute) { }
+	ngOnInit() {
+		this.form = new FormGroup({
+				'title': new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]}),
+				'content': new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]}),
+				'image': new FormControl(null, {validators: [Validators.required]})
+		});
+		this.route.paramMap.subscribe((paramMap: ParamMap) => {
+				if (paramMap.has('postId')) {
+						this.mode = 'edit';
+						this.isLoading = true;
+						this.post$ = this.postsService.getPost(paramMap.get('postId')!) as Post;
+						this.isLoading = false;
+						this.form.setValue({'title': this.post$.title, 'content': this.post$.content});
+				} else {
+						this.mode = 'create';
+				}
+		});
+	}
 
-    ngOnInit() {
-        this.form = new FormGroup({
-            'title': new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]}),
-            'content': new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]})
-        });
-        this.route.paramMap.subscribe((paramMap: ParamMap) => {
-            if (paramMap.has('postId')) {
-                this.mode = 'edit';
-                this.isLoading = true;
-                this.post$ = this.postsService.getPost(paramMap.get('postId')!) as Post;
-                this.isLoading = false;
-                this.form.setValue({'title': this.post$.title, 'content': this.post$.content});
-            } else {
-                this.mode = 'create';
-            }
-        });
-     }
+	onSavePost() {
+		if (this.form.invalid) {
+				return;
+		}
 
-    onSavePost() {
-        if (this.form.invalid) {
-            return;
-        }
+		if(this.mode === 'create') {
+				this.postsService.addPost(this.form.value.title, this.form.value.content);
+		} else {
+				this.postsService.updatePost(this.post$._id, this.form.value.title, this.form.value.content)
+		}
+		this.form.reset()
+	}
 
-        if(this.mode === 'create') {
-            this.postsService.addPost(this.form.value.title, this.form.value.content);
-        } else {
-            this.postsService.updatePost(this.post$._id, this.form.value.title, this.form.value.content)
-        }
-        this.form.reset()
+	onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length) {
+      const file = input.files[0];
+      this.previewImage(file);
+			this.form.patchValue({image: file});
     }
+  }
+
+  previewImage(file: File): void {
+    const reader = new FileReader();
+    reader.onload = (event: ProgressEvent) => {
+      this.imagePreview = (event.target as FileReader).result;
+    };
+    reader.readAsDataURL(file);
+  }
 }

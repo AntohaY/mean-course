@@ -16,7 +16,7 @@ import { PostListComponent } from './ui/posts/post-list/post-list.component';
       }
     `,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent {
 }
