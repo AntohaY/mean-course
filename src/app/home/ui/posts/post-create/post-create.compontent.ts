@@ -9,6 +9,7 @@ import { AsyncPipe, NgIf } from '@angular/common';
 import { PostsService } from 'src/app/shared/data-access/posts.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Post } from 'src/app/shared/interfaces/post';
+import { mimeType } from './mime-type.validator';
 
 @Component({
     selector: 'app-post-create',
@@ -31,32 +32,32 @@ export class PostCreateComponent implements OnInit {
 
 	ngOnInit() {
 		this.form = new FormGroup({
-				'title': new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]}),
-				'content': new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]}),
-				'image': new FormControl(null, {validators: [Validators.required]})
+			'title': new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]}),
+			'content': new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]}),
+			'image': new FormControl(null, {validators: [Validators.required], asyncValidators: [mimeType]})
 		});
 		this.route.paramMap.subscribe((paramMap: ParamMap) => {
-				if (paramMap.has('postId')) {
-						this.mode = 'edit';
-						this.isLoading = true;
-						this.post$ = this.postsService.getPost(paramMap.get('postId')!) as Post;
-						this.isLoading = false;
-						this.form.setValue({'title': this.post$.title, 'content': this.post$.content});
-				} else {
-						this.mode = 'create';
-				}
+			if (paramMap.has('postId')) {
+				this.mode = 'edit';
+				this.isLoading = true;
+				this.post$ = this.postsService.getPost(paramMap.get('postId')!) as Post;
+				this.isLoading = false;
+				this.form.setValue({'title': this.post$.title, 'content': this.post$.content});
+			} else {
+				this.mode = 'create';
+			}
 		});
 	}
 
 	onSavePost() {
 		if (this.form.invalid) {
-				return;
+			return;
 		}
 
 		if(this.mode === 'create') {
-				this.postsService.addPost(this.form.value.title, this.form.value.content);
+			this.postsService.addPost(this.form.value.title, this.form.value.content);
 		} else {
-				this.postsService.updatePost(this.post$._id, this.form.value.title, this.form.value.content)
+			this.postsService.updatePost(this.post$._id, this.form.value.title, this.form.value.content)
 		}
 		this.form.reset()
 	}
@@ -66,7 +67,7 @@ export class PostCreateComponent implements OnInit {
     if (input.files && input.files.length) {
       const file = input.files[0];
       this.previewImage(file);
-			this.form.patchValue({image: file});
+		this.form.patchValue({image: file});
     }
   }
 
