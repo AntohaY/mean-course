@@ -20,62 +20,93 @@ import { mimeType } from './mime-type.validator';
 })
 
 export class PostCreateComponent implements OnInit {
-	enteredTitle = '';
-	enteredContent = ''
+	enteredTitle = "";
+	enteredContent = "";
 	post!: Post;
-	isLoading: boolean = false;
+	isLoading = false;
 	form!: FormGroup;
 	imagePreview!: string | ArrayBuffer | null;
-	private mode = 'create';
-
-	constructor(private postsService: PostsService, private route: ActivatedRoute) { }
-
+	private mode = "create";
+	private postId!: string;
+  
+	constructor(
+	  public postsService: PostsService,
+	  public route: ActivatedRoute
+	) {}
+  
 	ngOnInit() {
-		this.form = new FormGroup({
-			'title': new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]}),
-			'content': new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]}),
-			'image': new FormControl(null, {validators: [Validators.required], asyncValidators: [mimeType]})
-		});
-		this.route.paramMap.subscribe((paramMap: ParamMap) => {
-			if (paramMap.has('postId')) {
-				this.mode = 'edit';
-				this.isLoading = true;
-				this.post = this.postsService.getPost(paramMap.get('postId')!) as Post;
-				this.isLoading = false;
-				console.log(this.post)
-				this.form.setValue({'title': this.post.title, 'content': this.post.content, 'image': this.post.imagePath});
-			} else {
-				this.mode = 'create';
-			}
-		});
-	}
-
-	onSavePost() {
-		if (this.form.invalid) {
-			return;
-		}
-		if(this.mode === 'create') {
-			this.postsService.addPost(this.form.value.title, this.form.value.content, this.form.value.image);
+	  this.form = new FormGroup({
+		title: new FormControl(null, {
+		  validators: [Validators.required, Validators.minLength(3)]
+		}),
+		content: new FormControl(null, { validators: [Validators.required] }),
+		image: new FormControl(null, {
+		  validators: [Validators.required],
+		  asyncValidators: [mimeType]
+		})
+	  });
+	  this.route.paramMap.subscribe((paramMap: ParamMap) => {
+		if (paramMap.has("postId")) {
+		  this.mode = "edit";
+		  this.postId = paramMap.get("postId")!;
+		  this.isLoading = true;
+		  this.postsService.getPost(this.postId).subscribe(postData => {
+			this.isLoading = false;
+			this.post = {
+			  _id: postData._id,
+			  title: postData.title,
+			  content: postData.content,
+			  imagePath: postData.imagePath
+			};
+			this.form.setValue({
+			  title: this.post.title,
+			  content: this.post.content,
+			  image: this.post.imagePath
+			});
+		  });
 		} else {
-			this.postsService.updatePost(this.post._id, this.form.value.title, this.form.value.content, this.form.value.image)
+		  this.mode = "create";
+		  this.postId = null!;
 		}
-		this.form.reset()
+	  });
 	}
-
+  
 	onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length) {
-      const file = input.files[0];
-      this.previewImage(file);
-		this.form.patchValue({image: file});
-    }
-  }
-
-  previewImage(file: File): void {
-    const reader = new FileReader();
-    reader.onload = (event: ProgressEvent) => {
-      this.imagePreview = (event.target as FileReader).result;
-    };
-    reader.readAsDataURL(file);
-  }
+		const input = event.target as HTMLInputElement;
+		if (input.files && input.files.length) {
+		  const file = input.files[0];
+		  this.previewImage(file);
+			this.form.patchValue({image: file});
+		}
+	  }
+	
+	  previewImage(file: File): void {
+		const reader = new FileReader();
+		reader.onload = (event: ProgressEvent) => {
+		  this.imagePreview = (event.target as FileReader).result;
+		};
+		reader.readAsDataURL(file);
+	  }
+  
+	onSavePost() {
+	  if (this.form.invalid) {
+		return;
+	  }
+	  this.isLoading = true;
+	  if (this.mode === "create") {
+		this.postsService.addPost(
+		  this.form.value.title,
+		  this.form.value.content,
+		  this.form.value.image
+		);
+	  } else {
+		this.postsService.updatePost(
+		  this.postId,
+		  this.form.value.title,
+		  this.form.value.content,
+		  this.form.value.image
+		);
+	  }
+	  this.form.reset();
+	}
 }

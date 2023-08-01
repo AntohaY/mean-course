@@ -13,11 +13,8 @@ import { PostsService } from './shared/data-access/posts.service';
 })
 export class AppComponent implements OnInit {
   constructor(
-    private postsService: PostsService
   ) {}
-  ngOnInit() {
-    this.postsService.fetchPostsFromServer();
-  }
+  ngOnInit() {}
 }
 
 @NgModule({

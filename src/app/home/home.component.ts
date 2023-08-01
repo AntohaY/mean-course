@@ -12,7 +12,7 @@ import { PostListComponent } from './ui/posts/post-list/post-list.component';
     `
       main {
         width: 80%;
-        margin-top: 1rem auto;
+        margin: 1rem auto;
       }
     `,
   ],
