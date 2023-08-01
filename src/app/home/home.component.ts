@@ -4,6 +4,8 @@ import { RouterModule } from '@angular/router';
 import { PostCreateComponent } from './ui/posts/post-create/post-create.compontent';
 import { HeaderComponent } from './ui/header/header.component';
 import { PostListComponent } from './ui/posts/post-list/post-list.component';
+import { LoginComponent } from './ui/auth/login/login.component';
+import { SignupComponent } from './ui/auth/signup/signup.component';
 
 @Component({
   selector: 'app-home',
@@ -42,6 +44,14 @@ export class HomeComponent {
           },
         ]
       },
+      {
+        path: 'login',
+        component: LoginComponent
+      },
+      {
+        path: 'signup',
+        component: SignupComponent
+      }
     ]),
     PostCreateComponent,
     HeaderComponent,

@@ -5,7 +5,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
-import { AsyncPipe, NgIf } from '@angular/common';
+import { NgIf } from '@angular/common';
 import { PostsService } from 'src/app/shared/data-access/posts.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Post } from 'src/app/shared/interfaces/post';
@@ -16,7 +16,7 @@ import { mimeType } from './mime-type.validator';
     templateUrl: 'post-create.component.html',
     styleUrls: ['post-create.component.scss'],
     standalone: true,
-    imports: [NgIf, ReactiveFormsModule, MatButtonModule, MatCardModule, MatInputModule, MatFormFieldModule, MatProgressSpinnerModule, AsyncPipe]
+    imports: [NgIf, ReactiveFormsModule, MatButtonModule, MatCardModule, MatInputModule, MatFormFieldModule, MatProgressSpinnerModule]
 })
 
 export class PostCreateComponent implements OnInit {
