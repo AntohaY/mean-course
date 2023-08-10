@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar'
 import { RouterModule } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../auth/data-access/auth.service';
+
 @Component({
     selector: 'app-header',
     templateUrl: 'header.component.html',
@@ -10,8 +13,26 @@ import { RouterModule } from '@angular/router';
     imports: [MatToolbarModule, RouterModule, MatButtonModule]
 })
 
-export class HeaderComponent implements OnInit {
-    constructor() { }
-
-    ngOnInit() { }
+export class HeaderComponent implements OnInit, OnDestroy {
+    userIsAuthenticated = false;
+    private authListenerSubs!: Subscription;
+  
+    constructor(private authService: AuthService) {}
+  
+    ngOnInit() {
+      this.userIsAuthenticated = this.authService.getIsAuth();
+      this.authListenerSubs = this.authService
+        .getAuthStatusListener()
+        .subscribe(isAuthenticated => {
+          this.userIsAuthenticated = isAuthenticated;
+        });
+    }
+  
+    onLogout() {
+      this.authService.logout();
+    }
+  
+    ngOnDestroy() {
+      this.authListenerSubs.unsubscribe();
+    }
 }

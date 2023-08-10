@@ -10,6 +10,8 @@ import { PostsService } from 'src/app/shared/data-access/posts.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Post } from 'src/app/shared/interfaces/post';
 import { mimeType } from './mime-type.validator';
+import { AuthService } from '../../auth/data-access/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-post-create',
@@ -28,13 +30,20 @@ export class PostCreateComponent implements OnInit {
 	imagePreview!: string | ArrayBuffer | null;
 	private mode = "create";
 	private postId!: string;
-  
+	private authStatusSub!: Subscription;
+
 	constructor(
 	  public postsService: PostsService,
-	  public route: ActivatedRoute
+	  public route: ActivatedRoute,
+	  public authService: AuthService
 	) {}
   
 	ngOnInit() {
+		this.authStatusSub = this.authService
+			.getAuthStatusListener()
+			.subscribe(authStatus => {
+				this.isLoading = false;
+      	});
 	  this.form = new FormGroup({
 		title: new FormControl(null, {
 		  validators: [Validators.required, Validators.minLength(3)]
@@ -108,5 +117,9 @@ export class PostCreateComponent implements OnInit {
 		);
 	  }
 	  this.form.reset();
+	}
+
+	ngOnDestroy() {
+		this.authStatusSub.unsubscribe();
 	}
 }
